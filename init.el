@@ -34,6 +34,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layers
    '(javascript
      c-c++
+     lua
      java
      octave
      ;; ----------------------------------------------------------------
@@ -70,6 +71,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages '(
                                       w3m
                                       quickrun
+                                      lispy
                                       )
 
    ;; A list of packages that cannot be updated.
@@ -202,7 +204,9 @@ It should only modify the values of Spacemacs settings."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(spacemacs-dark
                          spacemacs-light
-                         atom-one-dark)
+                         atom-one-dark
+                         gruvbox
+                         monokai)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
@@ -219,7 +223,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Default font or prioritized list of fonts.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 13.0
+                               :size 9.0
                                :weight normal
                                :width normal)
 
@@ -291,7 +295,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
-   dotspacemacs-which-key-delay 0.1
+   dotspacemacs-which-key-delay 0.4
 
    ;; Which-key frame position. Possible values are `right', `bottom' and
    ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
@@ -322,7 +326,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup nil
+   dotspacemacs-maximized-at-startup t
 
    ;; If non-nil the frame is undecorated when Emacs starts up. Combine this
    ;; variable with `dotspacemacs-maximized-at-startup' in OSX to obtain
@@ -473,10 +477,13 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
-  (setq configuration-layer-elpa-archives
-        '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-          ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
-          ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")))
+  (setq exec-path-from-shell-check-startup-files nil)
+  (setq tramp-ssh-controlmaster-options
+        "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+  ;; (setq configuration-layer-elpa-archives
+  ;;       '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+  ;;         ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
+  ;;         ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")))
   )
 
 (defun dotspacemacs/user-load ()
@@ -492,6 +499,7 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  ;; Defining some keys like when I using Vim.
   (define-key evil-normal-state-map (kbd "H") (kbd "^"))
   (define-key evil-normal-state-map (kbd "L") (kbd "$"))
   (define-key evil-normal-state-map (kbd "K") (kbd "5k"))
@@ -499,13 +507,24 @@ before packages are loaded."
   (define-key evil-visual-state-map (kbd "H") (kbd "^"))
   (define-key evil-visual-state-map (kbd "L") (kbd "$"))
 
+  ;; Defining tab.
   (setq-default tab-width 4)
   (setq indent-tabs-mode nil)
   (setq c-basic-offset 4)
+
+  ;; Customizing powerline theme like Vim.
   (setq-default powerline-default-separator 'arrow-fade)
+
+  ;; Defining neo-tree theme.
   (setq neo-theme 'nerd)
   (setq spacemacs/evil-smart-doc-lookup nil)
+
+  ;; Some of my favourite theme
   (load-theme 'atom-one-dark' t)
+  ;; (load-theme 'monokai t)
+
+  (setq dotspacemacs-active-transparency 90)
+  ;; Defining some customization keybindings.
   (spacemacs/set-leader-keys "oc" 'org-capture)
   (spacemacs/set-leader-keys "or" 'quickrun)
 
@@ -526,7 +545,7 @@ This function is called at the very end of Spacemacs initialization."
  '(evil-want-Y-yank-to-eol nil)
  '(package-selected-packages
    (quote
-    (quickrun yaml-mode w3m utop tuareg caml seeing-is-believing rvm ruby-tools ruby-test-mode ruby-refactor ruby-hash-syntax rubocopfmt rubocop rspec-mode robe rbenv rake ocp-indent ob-elixir minitest flycheck-ocaml merlin flycheck-mix flycheck-credo emojify emoji-cheat-sheet-plus dune company-emoji chruby bundler inf-ruby alchemist elixir-mode websocket zmq mvn meghanada maven-test-mode lsp-java helm-rtags groovy-mode groovy-imports pcache gradle-mode google-c-style flycheck-ycmd flycheck-rtags disaster cquery cpp-auto-include company-ycmd ycmd request-deferred company-rtags rtags company-c-headers clang-format ccls json-navigator hierarchy json-mode json-snatcher json-reformat company-tern web-beautify tide typescript-mode tern prettier-js nodejs-repl livid-mode skewer-mode js2-refactor multiple-cursors js2-mode js-doc import-js grizzl impatient-mode simple-httpd dap-mode bui add-node-modules-path helm-gtags ggtags counsel-gtags counsel swiper ivy atom-one-dark-theme yasnippet-snippets yapfify xterm-color vterm unfill treemacs-magit terminal-here smeargle shell-pop pytest pyenv-mode py-isort pippel pipenv pyvenv pip-requirements orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain mwim multi-term mmm-mode markdown-toc magit-svn magit-section magit-gitflow magit-popup lsp-ui lsp-treemacs lsp-python-ms live-py-mode importmagic epc ctable concurrent deferred htmlize helm-pydoc helm-org-rifle helm-org helm-lsp helm-gitignore helm-git-grep helm-company helm-c-yasnippet gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ fringe-helper git-gutter+ gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip evil-org evil-magit magit git-commit with-editor transient eshell-z eshell-prompt-extras esh-help cython-mode company-lsp lsp-mode markdown-mode dash-functional company-anaconda company browse-at-remote blacken auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-persp treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flycheck-elsa flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode diminish devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line)))
+    (lispy zoutline company-lua lua-mode monokai-theme quickrun yaml-mode w3m utop tuareg caml seeing-is-believing rvm ruby-tools ruby-test-mode ruby-refactor ruby-hash-syntax rubocopfmt rubocop rspec-mode robe rbenv rake ocp-indent ob-elixir minitest flycheck-ocaml merlin flycheck-mix flycheck-credo emojify emoji-cheat-sheet-plus dune company-emoji chruby bundler inf-ruby alchemist elixir-mode websocket zmq mvn meghanada maven-test-mode lsp-java helm-rtags groovy-mode groovy-imports pcache gradle-mode google-c-style flycheck-ycmd flycheck-rtags disaster cquery cpp-auto-include company-ycmd ycmd request-deferred company-rtags rtags company-c-headers clang-format ccls json-navigator hierarchy json-mode json-snatcher json-reformat company-tern web-beautify tide typescript-mode tern prettier-js nodejs-repl livid-mode skewer-mode js2-refactor multiple-cursors js2-mode js-doc import-js grizzl impatient-mode simple-httpd dap-mode bui add-node-modules-path helm-gtags ggtags counsel-gtags counsel swiper ivy atom-one-dark-theme yasnippet-snippets yapfify xterm-color vterm unfill treemacs-magit terminal-here smeargle shell-pop pytest pyenv-mode py-isort pippel pipenv pyvenv pip-requirements orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain mwim multi-term mmm-mode markdown-toc magit-svn magit-section magit-gitflow magit-popup lsp-ui lsp-treemacs lsp-python-ms live-py-mode importmagic epc ctable concurrent deferred htmlize helm-pydoc helm-org-rifle helm-org helm-lsp helm-gitignore helm-git-grep helm-company helm-c-yasnippet gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ fringe-helper git-gutter+ gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip evil-org evil-magit magit git-commit with-editor transient eshell-z eshell-prompt-extras esh-help cython-mode company-lsp lsp-mode markdown-mode dash-functional company-anaconda company browse-at-remote blacken auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-persp treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flycheck-elsa flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode diminish devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line)))
  '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
